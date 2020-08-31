@@ -14,9 +14,10 @@ import java.net.URL;
 public class JsonConnector {
 
     public JsonConnector() {
-        JsonParser jsonParser = new JsonParser();
 
-        String requestUrl = "https://gb-spring-amin-ishop-heroku.herokuapp.com/api/v1/order/2/id";
+        String entiti = "product";
+
+        String requestUrl = "https://gb-spring-amin-ishop-heroku.herokuapp.com/api/v1/" + entiti + "/2/id";
 
         URL url = null;
         try {
@@ -38,7 +39,8 @@ public class JsonConnector {
             ObjectMapper mapper = new ObjectMapper();
             Object json = mapper.readValue(response.toString(), Object.class);
             String indented = mapper.writeValueAsString(json);
-            User user = jsonParser.getUser(indented);
+//            jsonParser.getObj(indented);
+            JsonParser jsonParser = new JsonParser(indented);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
