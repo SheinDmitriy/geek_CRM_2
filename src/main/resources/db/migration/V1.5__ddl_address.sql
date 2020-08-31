@@ -47,7 +47,7 @@ CREATE TABLE addresses
     id               INT NOT NULL,
     country_id       INT NULL,
     region_id        INT NULL,
-    city_id         INT NULL,
+    city_id          INT NULL,
     short_address_id INT NULL,
     PRIMARY KEY (id),
     INDEX addresses_countries_idx (country_id ASC) VISIBLE,
