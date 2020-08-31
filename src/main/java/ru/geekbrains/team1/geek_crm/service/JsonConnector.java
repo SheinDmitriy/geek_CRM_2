@@ -14,23 +14,19 @@ import java.net.URL;
 public class JsonConnector {
 
     public JsonConnector() {
+        BufferedReader in;
 
+        String inputLine;
         String entiti = "product";
-
         String requestUrl = "https://gb-spring-amin-ishop-heroku.herokuapp.com/api/v1/" + entiti + "/2/id";
 
         URL url = null;
+
         try {
             url = new URL(requestUrl);
-
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
             connection.connect();
-
-            BufferedReader in;
-
             in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
             StringBuffer response = new StringBuffer();
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
@@ -39,7 +35,6 @@ public class JsonConnector {
             ObjectMapper mapper = new ObjectMapper();
             Object json = mapper.readValue(response.toString(), Object.class);
             String indented = mapper.writeValueAsString(json);
-//            jsonParser.getObj(indented);
             JsonParser jsonParser = new JsonParser(indented);
         } catch (MalformedURLException e) {
             e.printStackTrace();
