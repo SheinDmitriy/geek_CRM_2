@@ -35,6 +35,9 @@ public class Order {
     @Column(name = "total_costs")
     private BigDecimal totalCosts;
 
+    @Column(name = "store")
+    private String store;
+
     @OneToOne
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;
@@ -47,7 +50,17 @@ public class Order {
     @CreationTimestamp
     private LocalDateTime updatedAt;
 
-    public Order(long id, String orderStatus, User user) {
+    public Order(OrderStatus orderStatus, User user, List<OrderItem> orderItems, BigDecimal totalItemsCosts,
+                 BigDecimal totalCosts, String store, Delivery delivery, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.orderStatus = orderStatus;
+        this.user = user;
+        this.orderItems = orderItems;
+        this.totalItemsCosts = totalItemsCosts;
+        this.totalCosts = totalCosts;
+        this.store = store;
+        this.delivery = delivery;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     @Override
@@ -62,6 +75,7 @@ public class Order {
                 ", delivery=" + delivery +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", store=" + store +
                 '}';
     }
 }

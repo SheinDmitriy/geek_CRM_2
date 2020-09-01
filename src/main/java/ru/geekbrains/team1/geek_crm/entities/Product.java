@@ -44,6 +44,9 @@ public class Product {
     @UpdateTimestamp
     private LocalDateTime updateAt;
 
+    @Column(name = "store")
+    private String store;
+
     @Override
     public String toString() {
         return "Product{" +
@@ -56,6 +59,7 @@ public class Product {
                 ", fullDescription='" + fullDescription + '\'' +
                 ", createAt=" + createAt +
                 ", updateAt=" + updateAt +
+                ", store=" + store +
                 '}';
     }
 }
