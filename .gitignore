@@ -35,3 +35,4 @@ build/
 ### Private ###
 src/main/resources/private.properties
 src/main/resources/flyway.conf
+src/main/resources/application.properties
