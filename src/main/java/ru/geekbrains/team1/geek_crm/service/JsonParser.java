@@ -34,8 +34,10 @@ public class JsonParser {
         String lastName = userJson.getString("lastName");
         String email = userJson.getString("email");
         String phoneNumber = userJson.getString("phoneNumber");
+        String store = userJson.getString("store");
 
-        User user = new User(id, userName, firstName, lastName, email, phoneNumber);
+
+        User user = new User(id, userName, firstName, lastName, email, phoneNumber, store);
 
         System.out.println(user.toString());
 
@@ -50,6 +52,11 @@ public class JsonParser {
         long id = orderJson.getLong("id");
         String orderStatus = orderJson.getString("orderStatusTitle");
         User user = getUser( orderJson.getJSONObject("outUser"));
+
+
+
+
+
     }
 
     private void getEvent(JSONObject orderJson) throws JSONException, JsonProcessingException {
@@ -57,8 +64,5 @@ public class JsonParser {
         String orderStatus = orderJson.getString("orderStatusTitle");
         User user = getUser( orderJson.getJSONObject("outUser"));
 //        List orderItem = getUser( orderJson.getJSONObject("outUser"));
-
-
-
     }
 }

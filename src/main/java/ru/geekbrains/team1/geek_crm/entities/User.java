@@ -32,6 +32,10 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
 
+    @Column(name = "store")
+    private String store;
+
+
 //    @ManyToOne
 //    @JoinColumn(name = "delivery_address_id")
 //    private Address deliveryAddress;
@@ -48,13 +52,14 @@ public class User {
     }
 
 
-    public User(Long id, String userName, String firstName, String lastName, String email, String phoneNumber) {
+    public User(Long id, String userName, String firstName, String lastName, String email, String phoneNumber, String store) {
         this.id = id;
         this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        this.store = store;
     }
 
     @Override
@@ -66,6 +71,7 @@ public class User {
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", store='" + store + '\'' +
                 '}';
     }
 }

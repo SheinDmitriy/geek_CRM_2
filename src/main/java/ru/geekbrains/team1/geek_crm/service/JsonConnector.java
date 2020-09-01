@@ -16,7 +16,7 @@ public class JsonConnector {
         BufferedReader in;
 
         String inputLine;
-        String eventURL = "https://dev-amin-ishop-heroku.herokuapp.com/api/v1/event/1/id";
+//        String eventURL = "https://dev-amin-ishop-heroku.herokuapp.com/api/v1/event/1/id";
         String requestUrl = "https://gb-spring-amin-ishop-heroku.herokuapp.com/api/v1/user/2/id";
 
         URL url = null;
