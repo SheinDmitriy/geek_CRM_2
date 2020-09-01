@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "delivery_addresses")
+@Table(name = "addresses")
 @Data
 public class Address {
     @Id
@@ -13,8 +13,7 @@ public class Address {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "country")
+    @Column(name = "country")
     private String country;
 
     @Column(name = "city")
@@ -23,5 +22,13 @@ public class Address {
     @Column(name = "address")
     private String address;
 
-
+    @Override
+    public String toString() {
+        return "Address{" +
+                "id=" + id +
+                ", country='" + country + '\'' +
+                ", city='" + city + '\'' +
+                ", address='" + address + '\'' +
+                '}';
+    }
 }
