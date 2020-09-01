@@ -19,8 +19,8 @@ public class Order {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "status_id")
-    private OrderStatus orderStatus;
+    @JoinColumn(name = "order_status")
+    private String orderStatus;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -50,25 +50,25 @@ public class Order {
     @CreationTimestamp
     private LocalDateTime updatedAt;
 
-    public Order(OrderStatus orderStatus, User user, List<OrderItem> orderItems, BigDecimal totalItemsCosts,
-                 BigDecimal totalCosts, String store, Delivery delivery, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.orderStatus = orderStatus;
-        this.user = user;
-        this.orderItems = orderItems;
-        this.totalItemsCosts = totalItemsCosts;
-        this.totalCosts = totalCosts;
-        this.store = store;
-        this.delivery = delivery;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
+//    public Order(String orderStatus, User user, List<OrderItem> orderItems, BigDecimal totalItemsCosts,
+//                 BigDecimal totalCosts, String store, Delivery delivery, LocalDateTime createdAt, LocalDateTime updatedAt) {
+//        this.orderStatus = orderStatus;
+//        this.user = user;
+//        this.orderItems = orderItems;
+//        this.totalItemsCosts = totalItemsCosts;
+//        this.totalCosts = totalCosts;
+//        this.store = store;
+//        this.delivery = delivery;
+//        this.createdAt = createdAt;
+//        this.updatedAt = updatedAt;
+//    }
 
     @Override
     public String toString() {
         return "Order{" +
                 "id=" + id +
                 ", orderStatus=" + orderStatus +
-                ", userId=" + user.getId() +
+                ", userId=" + user.toString() +
                 ", orderItems=" + orderItems +
                 ", totalItemsCosts=" + totalItemsCosts +
                 ", totalCosts=" + totalCosts +

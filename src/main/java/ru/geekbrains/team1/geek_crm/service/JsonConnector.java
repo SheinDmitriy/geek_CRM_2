@@ -17,7 +17,7 @@ public class JsonConnector {
 
         String inputLine;
 //        String eventURL = "https://dev-amin-ishop-heroku.herokuapp.com/api/v1/event/1/id";
-        String requestUrl = "https://gb-spring-amin-ishop-heroku.herokuapp.com/api/v1/user/2/id";
+        String requestUrl = "https://gb-spring-amin-ishop-heroku.herokuapp.com/api/v1/order/2/id";
 
         URL url = null;
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import ru.geekbrains.team1.geek_crm.entities.Order;
 import ru.geekbrains.team1.geek_crm.entities.OrderItem;
 import ru.geekbrains.team1.geek_crm.entities.Product;
 import ru.geekbrains.team1.geek_crm.entities.User;
@@ -45,8 +46,6 @@ public class JsonParser {
 
         User user = new User(id, userName, firstName, lastName, email, phoneNumber, store);
 
-        System.out.println(user.toString());
-
         return user;
     }
 
@@ -55,7 +54,7 @@ public class JsonParser {
         product.setId(prodJson.getLong("id"));
         product.setStore(prodJson.getString("store"));
         product.setVendorCode(prodJson.getString("vendorCode"));
-        product.setTitle(prodJson.getString("title"));
+        product.setTitle(prodJson.getString("categoryTitle"));
         product.setShortDescription(prodJson.getString("shortDescription"));
         product.setFullDescription(prodJson.getString("fullDescription"));
         product.setPrice(BigDecimal.valueOf(Long.parseLong(prodJson.getString("price"))));
@@ -63,11 +62,14 @@ public class JsonParser {
     }
 
     private void getOrder(JSONObject orderJson) throws JSONException, JsonProcessingException {
-        long id = orderJson.getLong("id");
-        String store = orderJson.getString("store");
-        String orderStatus = orderJson.getString("orderStatusTitle");
-        User user = getUser( orderJson.getJSONObject("outUser"));
-        List<OrderItem> orderItems = getOrderItems(orderJson.getJSONArray("outOrderItems"));
+        Order order = new Order();
+        order.setId(orderJson.getLong("id"));
+        order.setStore(orderJson.getString("store"));
+        order.setOrderStatus(orderJson.getString("orderStatusTitle"));
+        order.setUser(getUser( orderJson.getJSONObject("outUser")));
+        order.setOrderItems(getOrderItems(orderJson.getJSONArray("outOrderItems")));
+
+        System.out.println(order.toString());
     }
 
     private List<OrderItem> getOrderItems(JSONArray outOrderItems) throws JSONException {
@@ -82,17 +84,21 @@ public class JsonParser {
         return list;
     }
 
-    private OrderItem getOrderItem(JSONObject jsonObject) {
+    private OrderItem getOrderItem(JSONObject orderItemJson) throws JSONException {
         OrderItem orderItem = new OrderItem();
-
+        orderItem.setId(orderItemJson.getLong("id"));
+        orderItem.setProduct(getProduct(orderItemJson.getJSONObject("outProduct")));
+        orderItem.setStore(orderItemJson.getString("store"));
+        orderItem.setItemPrice(BigDecimal.valueOf(Long.parseLong(orderItemJson.getString("itemPrice"))));
+        orderItem.setItemCosts(BigDecimal.valueOf(Long.parseLong(orderItemJson.getString("itemCosts"))));
+        orderItem.setQuantity(orderItemJson.getInt("quantity"));
+        orderItem.setOrder_id(orderItemJson.getLong("orderId"));
         return orderItem;
-
     }
 
     private void getEvent(JSONObject orderJson) throws JSONException, JsonProcessingException {
         long id = orderJson.getLong("id");
         String orderStatus = orderJson.getString("orderStatusTitle");
         User user = getUser( orderJson.getJSONObject("outUser"));
-//        List orderItem = getUser( orderJson.getJSONObject("outUser"));
     }
 }

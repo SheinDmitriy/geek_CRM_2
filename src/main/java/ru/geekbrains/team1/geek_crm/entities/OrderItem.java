@@ -29,17 +29,21 @@ public class OrderItem {
 
     @ManyToOne
     @JoinColumn(name = "order_id")
-    private Order order;
+    private Long order_id;
+
+    @Column(name = "store")
+    private String store;
 
     @Override
     public String toString() {
         return "OrderItem{" +
                 "id=" + id +
-                ", product=" + product +
+                ", product=" + product.toString() +
                 ", itemPrice=" + itemPrice +
                 ", quantity=" + quantity +
                 ", itemCosts=" + itemCosts +
-                ", order=" + order +
+                ", order_id=" + order_id +
+                ", store=" + store +
                 '}';
     }
 }
