@@ -13,10 +13,12 @@ DROP TABLE IF EXISTS orders cascade;
 
 CREATE TABLE orders
 (
-    id              INT NOT NULL,
-    store_id        INT NULL,
-    customer_id     INT NULL,
-    order_status_id INT NULL,
+    id              INT  NOT NULL,
+    store_id        INT  NULL,
+    customer_id     INT  NULL,
+    order_status_id INT  NULL,
+    create_date     DATE NULL,
+    complete_date   DATE NULL,
     PRIMARY KEY (id),
     INDEX orders_stores_idx (store_id ASC) VISIBLE,
     INDEX orders_customers_idx (customer_id ASC) VISIBLE,
