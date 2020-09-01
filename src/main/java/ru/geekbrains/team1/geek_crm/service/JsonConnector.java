@@ -2,7 +2,6 @@ package ru.geekbrains.team1.geek_crm.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONException;
-import ru.geekbrains.team1.geek_crm.entities.User;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,8 +16,8 @@ public class JsonConnector {
         BufferedReader in;
 
         String inputLine;
-        String entiti = "product";
-        String requestUrl = "https://gb-spring-amin-ishop-heroku.herokuapp.com/api/v1/" + entiti + "/2/id";
+        String eventURL = "https://dev-amin-ishop-heroku.herokuapp.com/api/v1/event/1/id";
+        String requestUrl = "https://gb-spring-amin-ishop-heroku.herokuapp.com/api/v1/user/2/id";
 
         URL url = null;
 

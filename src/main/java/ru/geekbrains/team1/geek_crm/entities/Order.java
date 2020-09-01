@@ -47,6 +47,9 @@ public class Order {
     @CreationTimestamp
     private LocalDateTime updatedAt;
 
+    public Order(long id, String orderStatus, User user) {
+    }
+
     @Override
     public String toString() {
         return "Order{" +
