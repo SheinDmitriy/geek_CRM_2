@@ -1,17 +1,17 @@
-package ru.geekbrains.team1.geek_crm.service;
+package ru.geekbrains.team1.geek_crm.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import ru.geekbrains.team1.geek_crm.entities.Order;
-import ru.geekbrains.team1.geek_crm.entities.OrderItem;
-import ru.geekbrains.team1.geek_crm.entities.Product;
-import ru.geekbrains.team1.geek_crm.entities.User;
+import ru.geekbrains.team1.geek_crm.entities.*;
+import ru.geekbrains.team1.geek_crm.entities.OutEntity;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class JsonParser {
     private String response;
@@ -19,20 +19,29 @@ public class JsonParser {
 
     public JsonParser(String response) throws JSONException, JsonProcessingException {
         this.response = response;
-        JSONObject objJson = new JSONObject(response);
 
-        switch(objJson.getString("entity")){
-            case "OutOrder":
-                getOrder(objJson);
-                break;
-            case "OutProduct":
-                getProduct(objJson);
-                break;
-            case "OutUser":
-                getUser(objJson);
-                break;
+/**
+ * Вариант №1 с ручным парсингм
+ */
+//        JSONObject objJson = new JSONObject(response);
+//        switch(objJson.getString("entity")){
+//            case "OutOrder":
+//                getOrder(objJson);
+//                break;
+//            case "OutProduct":
+//                getProduct(objJson);
+//                break;
+//            case "OutUser":
+//                getUser(objJson);
+//                break;
+//
+//        }
 
-        }
+/**
+ * Вариант №2 с GSON
+ */
+        OutEntity inEvent = new Gson().fromJson(response, OutEntity.class);
+        getEvent(inEvent);
     }
 
     private User getUser(JSONObject userJson) throws JSONException {
@@ -96,9 +105,76 @@ public class JsonParser {
         return orderItem;
     }
 
-    private void getEvent(JSONObject orderJson) throws JSONException, JsonProcessingException {
-        long id = orderJson.getLong("id");
-        String orderStatus = orderJson.getString("orderStatusTitle");
-        User user = getUser( orderJson.getJSONObject("outUser"));
+    /**
+     * Тут начинаются методы к Вариант №2 с GSON
+     * @param inEvent
+     */
+
+    private OutEntity getEvent(Object inEvent) {
+//        OutEntity inEvent = new Gson().fromJson(response, OutEntity.class);
+        OutEntity event = new OutEntity(inEvent.getClass().getSimpleName());
+        Map<String, Object> entityFields = event.getBody();
+
+
+
+        if(inEvent instanceof Event) {
+            fillEventEntityFields((Event) entityFields.get("body"), entityFields);
+        } else if(inEvent instanceof Order) {
+            fillOrderEntityFields((Order)entityFields.get("body"));
+        } else if(inEvent instanceof OrderStatus) {
+            fillOrderStatusEntityFields((OrderStatus)entityFields.get("body"));
+        } else if(inEvent instanceof User) {
+            fillUserEntityFields((User)entityFields.get("body"));
+        } else if(inEvent instanceof OrderItem) {
+            fillOrderItemEntityFields((OrderItem)entityFields.get("body"));
+        } else if(inEvent instanceof Product) {
+            fillProductEntityFields((Product)entityFields.get("body"));
+        } else if(inEvent instanceof Category) {
+            fillCategoryEntityFields((Category)entityFields.get("body"));
+        } else if(inEvent instanceof Delivery) {
+            fillDeliveryEntityFields((Delivery)entityFields.get("body"));
+        } else if(inEvent instanceof Address) {
+            fillAddressEntityFields((Address)entityFields.get("body"));
+        }
+
+        return event;
+
+//        System.out.println(outEntity.toString());
     }
+
+    private void fillAddressEntityFields(Address body) {
+    }
+
+    private void fillDeliveryEntityFields(Delivery body) {
+
+    }
+
+    private void fillCategoryEntityFields(Category body) {
+
+    }
+
+    private void fillProductEntityFields(Product body) {
+
+    }
+
+    private void fillOrderItemEntityFields(OrderItem body) {
+
+    }
+
+    private void fillUserEntityFields(User body) {
+
+    }
+
+    private void fillOrderStatusEntityFields(OrderStatus body) {
+
+    }
+
+    private void fillOrderEntityFields(Order body) {
+    }
+
+    private void fillEventEntityFields(Event body, Map<String, Object> entityFields) {
+        body.setEntity(getEvent((Order)entityFields.get("entity")));
+    }
+
+
 }
