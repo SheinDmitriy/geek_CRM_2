@@ -41,7 +41,7 @@ public class Delivery {
     public String toString() {
         return "Delivery{" +
                 "id=" + id +
-                ", orderId=" + order.getId() +
+                ", orderId=" + orderId +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", deliveryAddress=" + deliveryAddress +
                 ", deliveryCost=" + deliveryCost +

@@ -2,20 +2,16 @@ package ru.geekbrains.team1.geek_crm.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ru.geekbrains.team1.geek_crm.entities.*;
-import ru.geekbrains.team1.geek_crm.entities.Order.OrderBuilder;
-import ru.geekbrains.team1.geek_crm.entities.OutEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class JsonParser {
     private String response;
@@ -27,33 +23,46 @@ public class JsonParser {
         getEntity(objJson);
     }
 
-    private void getEntity(JSONObject entity) throws JSONException, JsonProcessingException {
+    private Object getEntity(JSONObject entity) throws JSONException, JsonProcessingException {
+        Object object = new Object();
         String eventClassName = entity.getString("entityClassSimpleName");
         JSONObject classBody = entity.getJSONObject("body");
 
         if(eventClassName.equals("Event")) {
-            getEvent(classBody);
+            getEvent(classBody, (Event) object);
         } else if(eventClassName.equals("Order")) {
-            getOrder(classBody);
+            getOrder(classBody, (Order) object);
         } else if(eventClassName.equals("OrderStatus") ) {
-            getOrderStatus(classBody);
+            getOrderStatus(classBody, (OrderStatus) object);
         } else if(eventClassName.equals("User") ) {
-            getUser(classBody);
+            getUser(classBody, (User) object);
         } else if(eventClassName.equals("OrderItem") ) {
-            getOrderItems(entity.getJSONArray("body"));
+            getOrderItems(entity.getJSONArray("body"), (OrderItem) object);
         } else if(eventClassName.equals("Product") ) {
-            getProduct(classBody);
+            getProduct(classBody, (Product) object);
         } else if(eventClassName.equals("Category") ) {
-            getCategory(classBody);
+            getCategory(classBody, (Category) object);
         } else if(eventClassName.equals("Delivery") ) {
-            getDelivery(classBody);
+            getDelivery(classBody, (Delivery) object);
         } else if(eventClassName.equals("Address") ) {
-            getAddress(classBody);
+            getAddress(classBody, (Address) object);
         }
+
+        return object;
     }
 
-    private Address getAddress(JSONObject addressJson) throws JSONException {
-        Address address = new Gson().fromJson(addressJson.toString(), Address.class);
+    private void getProduct(JSONObject classBody, Product object) {
+
+
+    }
+
+    private void getOrderStatus(JSONObject classBody, OrderStatus object) {
+
+    }
+
+    private void getAddress(JSONObject addressJson, Address address) throws JSONException {
+//        Address
+                address = new Gson().fromJson(addressJson.toString(), Address.class);
 
         //        Address address = Address.builder()
 //                .id(addressJson.getLong("id"))
@@ -61,21 +70,21 @@ public class JsonParser {
 //                .city(addressJson.getString("city"))
 //                .address(addressJson.getString("address"))
 //                .build();
-        return address;
+//        return address;
 
     }
 
-    private Category getCategory(JSONObject catJson) {
-        Category category = new Gson().fromJson(catJson.toString(), Category.class);
-        return category;
+    private void getCategory(JSONObject catJson, Category category) {
+        category = new Gson().fromJson(catJson.toString(), Category.class);
+//        return category;
 
     }
 
-    private void getEvent(JSONObject body) {
+    private void getEvent(JSONObject body, Event object) {
 
     }
 
-    private User getUser(JSONObject userJson) throws JSONException {
+    private User getUser(JSONObject userJson, User object) throws JSONException {
         long id = userJson.getLong("id");
         String userName = userJson.getString("userName");
         String firstName = userJson.getString("firstName");
@@ -102,16 +111,16 @@ public class JsonParser {
         return product;
     }
 
-    private Order getOrder(JSONObject orderJson) throws JSONException {
+    private Order getOrder(JSONObject orderJson, Order object) throws JSONException {
         Order order = Order.builder()
                 .id(orderJson.getLong("id"))
                 .orderStatus(getOrderStatus(orderJson.getJSONObject("orderStatus")))
-                .user(getUser(orderJson.getJSONObject("user")))
-                .orderItems(getOrderItems(orderJson.getJSONArray("orderItems")))
+                .user(getUser(orderJson.getJSONObject("user"), (User) object))
+                .orderItems(getOrderItems(orderJson.getJSONArray("orderItems"), (OrderItem) object))
                 .totalItemsCosts(BigDecimal.valueOf(Long.parseLong(orderJson.getString("totalItemsCosts"))))
                 .totalCosts(BigDecimal.valueOf(Long.parseLong(orderJson.getString("totalCosts"))))
                 .store(orderJson.getString("store"))
-                .delivery(getDelivery(orderJson.getJSONObject("delivery")))
+                .delivery(getDelivery(orderJson.getJSONObject("delivery"), (Delivery) object))
                 .createdAt(localDateConvert(orderJson.getString("createdAt")))
                 .updatedAt(localDateConvert(orderJson.getString("updatedAt")))
                 .build();
@@ -126,22 +135,21 @@ public class JsonParser {
         return date;
     }
 
-    private Delivery getDelivery(JSONObject deliveryJson) throws JSONException {
-        Delivery delivery = Delivery.builder()
-                .id(deliveryJson.getLong("id"))
-                .orderId(deliveryJson.getLong("order"))
-                .phoneNumber(deliveryJson.getString("phoneNumber"))
-                .deliveryAddress(getAddress(deliveryJson.getJSONObject("deliveryAddress").getJSONObject("body")))
-                .build();
+    private void getDelivery(JSONObject deliveryJson, Delivery delivery) throws JSONException, JsonProcessingException {
+         delivery = Delivery.builder()
+                 .id(deliveryJson.getLong("id"))
+                 .orderId(deliveryJson.getLong("order"))
+                 .phoneNumber(deliveryJson.getString("phoneNumber"))
+                 .deliveryAddress((Address) getEntity(deliveryJson.getJSONObject("deliveryAddress")))
+                 .deliveryCost(BigDecimal.valueOf(Long.parseLong(deliveryJson.getString("totalCosts"))))
+                 .deliveryExpectedAt(localDateConvert(deliveryJson.getString("deliveryExpectedAt")))
+                 .deliveredAt(localDateConvert(deliveryJson.getString("deliveredAt")))
+                 .build();
 
-        return delivery;
+//        return delivery;
     }
 
-    private OrderStatus getOrderStatus(JSONObject orderJson) {
-        return null;
-    }
-
-    private List<OrderItem> getOrderItems(JSONArray outOrderItems) throws JSONException {
+    private List<OrderItem> getOrderItems(JSONArray outOrderItems, OrderItem object) throws JSONException {
         List<OrderItem> list = new ArrayList<>();
 
         if (outOrderItems != null) {
