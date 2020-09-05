@@ -1,5 +1,6 @@
 package ru.geekbrains.team1.geek_crm.entities;
 
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "orders")
 @Data
+@Builder
 public class Order {
 
     @Id
@@ -20,7 +22,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "order_status")
-    private String orderStatus;
+    private OrderStatus orderStatus;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -78,4 +80,13 @@ public class Order {
                 ", store=" + store +
                 '}';
     }
+
+//    public static class builder {
+//    }
+
+//    public class builder extends Order {
+//        builder(Long id, String orderStatus, User user, List<OrderItem> orderItems, BigDecimal totalItemsCosts, BigDecimal totalCosts, String store, Delivery delivery, LocalDateTime createdAt, LocalDateTime updatedAt) {
+//            super(id, orderStatus, user, orderItems, totalItemsCosts, totalCosts, store, delivery, createdAt, updatedAt);
+//        }
+//    }
 }

@@ -15,8 +15,8 @@ public class Event {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "type", unique = true)
-    private String type;
+    @Column(name = "action_type")
+    private String actionType;
 
     @Column(name = "title")
     private String title;
@@ -24,17 +24,18 @@ public class Event {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "entity")
-    private Object entity;
+    @Column(name = "entity_type")
+    private String entityType;
 
-    @Column(name = "delivery_status")
-    private String deliveryStatus;
+    @Column(name = "entity_id")
+    private Long entityId;
 
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @Column(name = "delivered_at")
-    private LocalDateTime deliveredAt;
+    @Column(name = "server_accepted_at")
+    private LocalDateTime serverAcceptedAt;
+
 
 }

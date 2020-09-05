@@ -1,5 +1,6 @@
 package ru.geekbrains.team1.geek_crm.entities;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import java.util.Map;
 @Entity
 @Table(name = "users")
 @Data
+@Builder
 public class User {
 
     @Id
