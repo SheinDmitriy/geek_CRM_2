@@ -31,7 +31,7 @@ public class OrderItem {
 
     @ManyToOne
     @JoinColumn(name = "order_id")
-    private Long order_id;
+    private Long orderId;
 
     @Column(name = "store")
     private String store;
@@ -44,7 +44,7 @@ public class OrderItem {
                 ", itemPrice=" + itemPrice +
                 ", quantity=" + quantity +
                 ", itemCosts=" + itemCosts +
-                ", order_id=" + order_id +
+                ", order_id=" + orderId +
                 ", store=" + store +
                 '}';
     }
