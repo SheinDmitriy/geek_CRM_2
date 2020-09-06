@@ -14,10 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JsonParser {
-    private String response;
+//    private String response;
+//
+//    public JsonParser(String response) throws JSONException, JsonProcessingException {
+//        this.response = response;
+//
+//    }
 
-    public JsonParser(String response) throws JSONException, JsonProcessingException {
-        this.response = response;
+    public void parse(String response) throws JSONException, JsonProcessingException {
         JSONObject objJson = new JSONObject(response);
         System.out.println(getEntity(objJson).toString());
     }
