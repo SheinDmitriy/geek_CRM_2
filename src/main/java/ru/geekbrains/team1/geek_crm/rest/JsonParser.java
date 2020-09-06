@@ -52,6 +52,27 @@ public class JsonParser {
         return object;
     }
 
+    private void getProduct(JSONObject productJson, Product product) throws JSONException, JsonProcessingException {
+        product = Product.builder()
+                .id(productJson.getLong("id"))
+                .category((Category) getEntity(productJson.getJSONObject("category")))
+                .title(productJson.getString("title"))
+                .price(BigDecimal.valueOf(Long.parseLong(productJson.getString("price"))))
+                .shortDescription(productJson.getString("shortDescription"))
+                .fullDescription(productJson.getString("fullDescription"))
+                .createdAt(localDateConvert(productJson.getString("createdAt")))
+                .updatedAt(localDateConvert(productJson.getString("updatedAt")))
+                .store(productJson.getString("store"))
+                .build();
+    }
+
+    private void getOrderStatus(JSONObject orderStatusJson, OrderStatus orderStatus) throws JSONException {
+//        orderStatus = OrderStatus.builder()
+//                .id(orderStatusJson.getS("id"))
+//                .build();
+        orderStatus = new Gson().fromJson(orderStatusJson.toString(), OrderStatus.class);
+    }
+
     private void getOrderItem(JSONObject orderItemJson, OrderItem orderItem) throws JSONException, JsonProcessingException {
        orderItem = OrderItem.builder()
                .id(orderItemJson.getLong("id"))

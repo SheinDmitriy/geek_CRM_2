@@ -40,11 +40,11 @@ public class Product {
 
     @Column(name = "create_at")
     @CreationTimestamp
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "update_at")
     @UpdateTimestamp
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
     @Column(name = "store")
     private String store;
