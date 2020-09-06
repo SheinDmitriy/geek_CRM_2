@@ -2,124 +2,116 @@ package ru.geekbrains.team1.geek_crm.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
+import org.apache.tomcat.jni.Local;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ru.geekbrains.team1.geek_crm.entities.*;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class JsonParser {
     private String response;
 
-
     public JsonParser(String response) throws JSONException, JsonProcessingException {
         this.response = response;
         JSONObject objJson = new JSONObject(response);
-        getEntity(objJson);
+        System.out.println(getEntity(objJson).toString());
     }
 
     private Object getEntity(JSONObject entity) throws JSONException, JsonProcessingException {
-        Object object = new Object();
         String eventClassName = entity.getString("entityClassSimpleName");
         JSONObject classBody = entity.getJSONObject("body");
 
         if(eventClassName.equals("Event")) {
-            getEvent(classBody, (Event) object);
+            return getEvent(classBody);
         } else if(eventClassName.equals("Order")) {
-            getOrder(classBody, (Order) object);
+            return getOrder(classBody);
         } else if(eventClassName.equals("OrderStatus") ) {
-            getOrderStatus(classBody, (OrderStatus) object);
+            return getOrderStatus(classBody);
         } else if(eventClassName.equals("User") ) {
-            getUser(classBody, (User) object);
+            return getUser(classBody);
         } else if(eventClassName.equals("OrderItem") ) {
-            getOrderItem(classBody, (OrderItem) object);
+            return getOrderItem(classBody);
         } else if(eventClassName.equals("Product") ) {
-            getProduct(classBody, (Product) object);
+            return getProduct(classBody);
         } else if(eventClassName.equals("Category") ) {
-            getCategory(classBody, (Category) object);
+            return getCategory(classBody);
         } else if(eventClassName.equals("Delivery") ) {
-            getDelivery(classBody, (Delivery) object);
+            return getDelivery(classBody);
         } else if(eventClassName.equals("Address") ) {
-            getAddress(classBody, (Address) object);
+            return getAddress(classBody);
         }
-
-        return object;
+        return null;
     }
 
-    private void getUser(JSONObject userJson, User user) throws JSONException, JsonProcessingException {
-        user = User.builder()
+    private User getUser(JSONObject userJson) throws JSONException, JsonProcessingException {
+        User user = User.builder()
                 .id(userJson.getLong("id"))
                 .userName(userJson.getString("userName"))
                 .firstName(userJson.getString("firstName"))
                 .lastName(userJson.getString("lastName"))
                 .email(userJson.getString("email"))
                 .phoneNumber(userJson.getString("phoneNumber"))
-                .store(userJson.getString("store"))
+//                .store(userJson.getString("store"))
                 .deliveryAddress((Address) getEntity(userJson.getJSONObject("deliveryAddress")))
                 .build();
+        return user;
     }
 
-    private void getProduct(JSONObject productJson, Product product) throws JSONException, JsonProcessingException {
-        product = Product.builder()
+    private Product getProduct(JSONObject productJson) throws JSONException, JsonProcessingException {
+        Product product = Product.builder()
                 .id(productJson.getLong("id"))
                 .category((Category) getEntity(productJson.getJSONObject("category")))
+                .vendorCode(productJson.getString("vendorCode"))
                 .title(productJson.getString("title"))
-                .price(BigDecimal.valueOf(Long.parseLong(productJson.getString("price"))))
+                .price(BigDecimal.valueOf(productJson.getLong("price")))
                 .shortDescription(productJson.getString("shortDescription"))
-                .fullDescription(productJson.getString("fullDescription"))
-                .createdAt(localDateConvert(productJson.getString("createdAt")))
-                .updatedAt(localDateConvert(productJson.getString("updatedAt")))
-                .store(productJson.getString("store"))
+//                .fullDescription(productJson.getString("fullDescription"))
+//                .createdAt(localDateConvert(productJson.getString("createdAt")))
+//                .updatedAt(localDateConvert(productJson.getString("updatedAt")))
+//                .store(productJson.getString("store"))
                 .build();
+        return product;
     }
 
-    private void getOrderStatus(JSONObject orderStatusJson, OrderStatus orderStatus) throws JSONException {
-//        orderStatus = OrderStatus.builder()
-//                .id(orderStatusJson.getS("id"))
-//                .build();
-        orderStatus = new Gson().fromJson(orderStatusJson.toString(), OrderStatus.class);
+    private OrderStatus getOrderStatus(JSONObject orderStatusJson) {
+         OrderStatus orderStatus = new Gson().fromJson(orderStatusJson.toString(), OrderStatus.class);
+         return orderStatus;
     }
 
-    private void getOrderItem(JSONObject orderItemJson, OrderItem orderItem) throws JSONException, JsonProcessingException {
-       orderItem = OrderItem.builder()
+    private OrderItem getOrderItem(JSONObject orderItemJson) throws JSONException, JsonProcessingException {
+       OrderItem orderItem = OrderItem.builder()
                .id(orderItemJson.getLong("id"))
                .product((Product) getEntity(orderItemJson.getJSONObject("product")))
-               .itemPrice(BigDecimal.valueOf(Long.parseLong(orderItemJson.getString("itemPrice"))))
+               .itemPrice(BigDecimal.valueOf(orderItemJson.getLong("itemPrice")))
                .quantity(orderItemJson.getInt("quantity"))
-               .itemCosts(BigDecimal.valueOf(Long.parseLong(orderItemJson.getString("itemCosts"))))
+               .itemCosts(BigDecimal.valueOf(orderItemJson.getLong("itemCosts")))
                .orderId(orderItemJson.getLong("order"))
-               .store(orderItemJson.getString("store"))
+//               .store(orderItemJson.getString("store"))
                .build();
+       return orderItem;
     }
 
-    private void getAddress(JSONObject addressJson, Address address) throws JSONException {
-//        Address
-                address = new Gson().fromJson(addressJson.toString(), Address.class);
-
-        //        Address address = Address.builder()
-//                .id(addressJson.getLong("id"))
-//                .country(addressJson.getString("country"))
-//                .city(addressJson.getString("city"))
-//                .address(addressJson.getString("address"))
-//                .build();
-//        return address;
-
+    private Address getAddress(JSONObject addressJson) {
+        Address address = new Gson().fromJson(addressJson.toString(), Address.class);
+        return address;
     }
 
-    private void getCategory(JSONObject catJson, Category category) {
-        category = new Gson().fromJson(catJson.toString(), Category.class);
-//        return category;
-
+    private Category getCategory(JSONObject catJson) {
+        Category  category = new Gson().fromJson(catJson.toString(), Category.class);
+        return category;
     }
 
-    private void getEvent(JSONObject eventJson, Event event) throws JSONException {
-         event = Event.builder()
+    private Event getEvent(JSONObject eventJson) throws JSONException {
+         Event event = Event.builder()
                  .id(eventJson.getLong("id"))
                  .actionType(eventJson.getString("actionType"))
                  .title(eventJson.getString("title"))
@@ -129,63 +121,57 @@ public class JsonParser {
                  .createdAt(localDateConvert(eventJson.getString("createdAt")))
                  .serverAcceptedAt(localDateConvert(eventJson.getString("serverAcceptedAt")))
                  .build();
+         return event;
     }
 
-    private void getOrder(JSONObject orderJson, Order order) throws JSONException, JsonProcessingException {
-         order = Order.builder()
+    private Order getOrder(JSONObject orderJson) throws JSONException, JsonProcessingException {
+         Order order = Order.builder()
                 .id(orderJson.getLong("id"))
                 .orderStatus((OrderStatus) getEntity(orderJson.getJSONObject("orderStatus")))
                 .user((User) getEntity(orderJson.getJSONObject("user")))
-                .orderItems(getOrderItems(orderJson.getJSONObject("orderItems")))
-                .totalItemsCosts(BigDecimal.valueOf(Long.parseLong(orderJson.getString("totalItemsCosts"))))
-                .totalCosts(BigDecimal.valueOf(Long.parseLong(orderJson.getString("totalCosts"))))
-                .store(orderJson.getString("store"))
+                .orderItems(getOrderItems(orderJson.getJSONArray("orderItems")))
+                .totalItemsCosts(BigDecimal.valueOf(orderJson.getLong("totalItemsCosts")))
+                .totalCosts(BigDecimal.valueOf(orderJson.getLong("totalCosts")))
+//                .store(orderJson.getString("store"))
                 .delivery((Delivery) getEntity(orderJson.getJSONObject("delivery")))
                 .createdAt(localDateConvert(orderJson.getString("createdAt")))
                 .updatedAt(localDateConvert(orderJson.getString("updatedAt")))
                 .build();
 
         System.out.println(order.toString());
-//        return order;
+        return order;
     }
 
-    private LocalDateTime localDateConvert(String str) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime date = LocalDateTime.parse(str, formatter);
-        return date;
+    private LocalDateTime localDateConvert(String dateTime) {
+        if (!dateTime.equals("null")) {
+            dateTime = dateTime.replace("T", " ");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime date = LocalDateTime.parse(dateTime, formatter);
+
+            return date;
+        } else return null;
+
     }
 
-    private void getDelivery(JSONObject deliveryJson, Delivery delivery) throws JSONException, JsonProcessingException {
-         delivery = Delivery.builder()
+    private Delivery getDelivery(JSONObject deliveryJson) throws JSONException, JsonProcessingException {
+         Delivery delivery = Delivery.builder()
                  .id(deliveryJson.getLong("id"))
                  .orderId(deliveryJson.getLong("order"))
                  .phoneNumber(deliveryJson.getString("phoneNumber"))
                  .deliveryAddress((Address)getEntity(deliveryJson.getJSONObject("deliveryAddress")))
-                 .deliveryCost(BigDecimal.valueOf(Long.parseLong(deliveryJson.getString("totalCosts"))))
+                 .deliveryCost(BigDecimal.valueOf(deliveryJson.getLong("deliveryCost")))
                  .deliveryExpectedAt(localDateConvert(deliveryJson.getString("deliveryExpectedAt")))
                  .deliveredAt(localDateConvert(deliveryJson.getString("deliveredAt")))
                  .build();
-
-//        return delivery;
+         return delivery;
     }
 
-    private List<OrderItem> getOrderItems(JSONObject outOrderItems) throws JSONException, JsonProcessingException {
-
-        Iterator x = outOrderItems.keys();
-//        JSONArray jsonArray = new JSONArray();
+    private List<OrderItem> getOrderItems(JSONArray classBody) throws JSONException, JsonProcessingException {
         List<OrderItem> list = new ArrayList<>();
-        while (x.hasNext()){
-            String key = (String) x.next();
-            list.add((OrderItem) getEntity(new JSONObject(outOrderItems.get(key).toString())));
+        int len = classBody.length();
+        for (int i=0;i<len;i++){
+            list.add((OrderItem) getEntity(new JSONObject(classBody.get(i).toString())));
         }
-
-
-
-//        int len = jsonArray.length();
-//        for (int i=0;i<len;i++){
-//            list.add((OrderItem) getEntity(new JSONObject(jsonArray.get(i).toString())));
-//        }
-
         return list;
     }
 }

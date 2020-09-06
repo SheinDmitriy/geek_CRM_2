@@ -52,17 +52,6 @@ public class User {
         COLUMN_MAPPINGS.put("email", "email");
     }
 
-
-    public User(Long id, String userName, String firstName, String lastName, String email, String phoneNumber, String store) {
-        this.id = id;
-        this.userName = userName;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.store = store;
-    }
-
     @Override
     public String toString() {
         return "User{" +
