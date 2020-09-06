@@ -2,17 +2,13 @@ package ru.geekbrains.team1.geek_crm.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
-import org.apache.tomcat.jni.Local;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ru.geekbrains.team1.geek_crm.entities.*;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +32,8 @@ public class JsonParser {
             return getOrder(classBody);
         } else if(eventClassName.equals("OrderStatus") ) {
             return getOrderStatus(classBody);
-        } else if(eventClassName.equals("User") ) {
-            return getUser(classBody);
+        } else if(eventClassName.equals("Customer") ) {
+            return getCustomer(classBody);
         } else if(eventClassName.equals("OrderItem") ) {
             return getOrderItem(classBody);
         } else if(eventClassName.equals("Product") ) {
@@ -52,18 +48,18 @@ public class JsonParser {
         return null;
     }
 
-    private User getUser(JSONObject userJson) throws JSONException, JsonProcessingException {
-        User user = User.builder()
-                .id(userJson.getLong("id"))
-                .userName(userJson.getString("userName"))
-                .firstName(userJson.getString("firstName"))
-                .lastName(userJson.getString("lastName"))
-                .email(userJson.getString("email"))
-                .phoneNumber(userJson.getString("phoneNumber"))
+    private Customer getCustomer(JSONObject customerJson) throws JSONException, JsonProcessingException {
+        Customer customer = Customer.builder()
+                .id(customerJson.getLong("id"))
+                .userName(customerJson.getString("userName"))
+                .firstName(customerJson.getString("firstName"))
+                .lastName(customerJson.getString("lastName"))
+                .email(customerJson.getString("email"))
+                .phoneNumber(customerJson.getString("phoneNumber"))
 //                .store(userJson.getString("store"))
-                .deliveryAddress((Address) getEntity(userJson.getJSONObject("deliveryAddress")))
+                .deliveryAddress((Address) getEntity(customerJson.getJSONObject("deliveryAddress")))
                 .build();
-        return user;
+        return customer;
     }
 
     private Product getProduct(JSONObject productJson) throws JSONException, JsonProcessingException {
@@ -128,7 +124,7 @@ public class JsonParser {
          Order order = Order.builder()
                 .id(orderJson.getLong("id"))
                 .orderStatus((OrderStatus) getEntity(orderJson.getJSONObject("orderStatus")))
-                .user((User) getEntity(orderJson.getJSONObject("user")))
+                .customer((Customer) getEntity(orderJson.getJSONObject("Customer")))
                 .orderItems(getOrderItems(orderJson.getJSONArray("orderItems")))
                 .totalItemsCosts(BigDecimal.valueOf(orderJson.getLong("totalItemsCosts")))
                 .totalCosts(BigDecimal.valueOf(orderJson.getLong("totalCosts")))

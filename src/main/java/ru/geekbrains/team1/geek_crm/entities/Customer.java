@@ -12,7 +12,7 @@ import java.util.Map;
 @Table(name = "users")
 @Data
 @Builder
-public class User {
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,7 +54,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "Customer{" +
                 "id=" + id +
                 ", userName='" + userName + '\'' +
                 ", firstName='" + firstName + '\'' +
