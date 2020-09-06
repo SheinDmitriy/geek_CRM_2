@@ -133,8 +133,6 @@ public class JsonParser {
                 .createdAt(localDateConvert(orderJson.getString("createdAt")))
                 .updatedAt(localDateConvert(orderJson.getString("updatedAt")))
                 .build();
-
-        System.out.println(order.toString());
         return order;
     }
 

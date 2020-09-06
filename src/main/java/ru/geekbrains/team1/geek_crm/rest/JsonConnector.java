@@ -12,18 +12,13 @@ import java.net.URL;
 
 public class JsonConnector {
 
-    public JsonConnector() {
-        BufferedReader in;
+    BufferedReader in;
 
+    public void get (String requestUrl){
         String inputLine;
-        String eventURL = "https://dev-amin-ishop-heroku.herokuapp.com/api/v1/order/1/orderId";
-        String requestUrl = "https://gb-spring-amin-ishop-heroku.herokuapp.com/api/v1/order/2/id";
-
-        URL url = null;
 
         try {
-//            url = new URL(requestUrl);
-            url = new URL(eventURL);
+            URL url = new URL(requestUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.connect();
             in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
