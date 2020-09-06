@@ -52,6 +52,19 @@ public class JsonParser {
         return object;
     }
 
+    private void getUser(JSONObject userJson, User user) throws JSONException, JsonProcessingException {
+        user = User.builder()
+                .id(userJson.getLong("id"))
+                .userName(userJson.getString("userName"))
+                .firstName(userJson.getString("firstName"))
+                .lastName(userJson.getString("lastName"))
+                .email(userJson.getString("email"))
+                .phoneNumber(userJson.getString("phoneNumber"))
+                .store(userJson.getString("store"))
+                .deliveryAddress((Address) getEntity(userJson.getJSONObject("deliveryAddress")))
+                .build();
+    }
+
     private void getProduct(JSONObject productJson, Product product) throws JSONException, JsonProcessingException {
         product = Product.builder()
                 .id(productJson.getLong("id"))

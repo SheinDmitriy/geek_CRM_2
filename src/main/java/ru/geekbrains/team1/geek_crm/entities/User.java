@@ -37,10 +37,9 @@ public class User {
     @Column(name = "store")
     private String store;
 
-
-//    @ManyToOne
-//    @JoinColumn(name = "delivery_address_id")
-//    private Address deliveryAddress;
+    @ManyToOne
+    @JoinColumn(name = "delivery_address_id")
+    private Address deliveryAddress;
 
      public static final Map<String, String> COLUMN_MAPPINGS = new HashMap<>();
 
