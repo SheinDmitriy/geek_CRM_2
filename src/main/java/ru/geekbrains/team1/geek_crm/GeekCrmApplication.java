@@ -8,7 +8,7 @@ public class GeekCrmApplication {
 
     public static void main(String[] args) {
 //        SpringApplication.run(GeekCrmApplication.class, args);
-        String eventURL = "https://dev-amin-ishop-heroku.herokuapp.com/api/v1/order/1/orderId";
+        String eventURL = "https://dev-amin-ishop-heroku.herokuapp.com/requests-heroku-order.http";
         String requestUrl = "https://gb-spring-amin-ishop-heroku.herokuapp.com/api/v1/order/2/id";
         JsonConnector jsonConnector = new JsonConnector();
         jsonConnector.get(eventURL);

@@ -2,6 +2,7 @@ package ru.geekbrains.team1.geek_crm.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.sun.deploy.net.HttpResponse;
 import org.json.JSONException;
 import sun.net.www.http.HttpClient;
@@ -9,6 +10,7 @@ import sun.net.www.http.HttpClient;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -44,7 +46,7 @@ public class JsonConnector {
         }
     }
 
-    public void post(String requestUrl){
+    public void post(String requestUrl, Object object){
 //        URL url = null;
         try {
             URL url = new URL(requestUrl);
@@ -56,6 +58,11 @@ public class JsonConnector {
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestMethod("PUT");
 
+            String parent = new Gson().toJson(object);
+
+            OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
+            wr.write(parent);
+            wr.flush();
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
