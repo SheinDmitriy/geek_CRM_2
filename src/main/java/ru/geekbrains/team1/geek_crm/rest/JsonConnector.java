@@ -1,29 +1,29 @@
 package ru.geekbrains.team1.geek_crm.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.sun.deploy.net.HttpResponse;
 import org.json.JSONException;
+import sun.net.www.http.HttpClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 public class JsonConnector {
 
-    public JsonConnector() {
-        BufferedReader in;
+    BufferedReader in;
 
+    public void get (String requestUrl){
         String inputLine;
-        String eventURL = "https://dev-amin-ishop-heroku.herokuapp.com/api/v1/event/1/id";
-        String requestUrl = "https://gb-spring-amin-ishop-heroku.herokuapp.com/api/v1/order/2/id";
-
-        URL url = null;
 
         try {
-//            url = new URL(requestUrl);
-            url = new URL(eventURL);
+            URL url = new URL(requestUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.connect();
             in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -35,12 +35,38 @@ public class JsonConnector {
             ObjectMapper mapper = new ObjectMapper();
             Object json = mapper.readValue(response.toString(), Object.class);
             String indented = mapper.writeValueAsString(json);
-            JsonParser jsonParser = new JsonParser(indented);
+            JsonParser jsonParser = new JsonParser();
+            jsonParser.parse(indented);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void post(String requestUrl, Object object){
+//        URL url = null;
+        try {
+            URL url = new URL(requestUrl);
+
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setRequestMethod("PUT");
+
+            String parent = new Gson().toJson(object);
+
+            OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
+            wr.write(parent);
+            wr.flush();
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

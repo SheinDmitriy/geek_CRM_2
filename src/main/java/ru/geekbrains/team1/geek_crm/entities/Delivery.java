@@ -1,5 +1,6 @@
 package ru.geekbrains.team1.geek_crm.entities;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "deliveries")
 @Data
+@Builder
 public class Delivery {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +19,7 @@ public class Delivery {
 
     @OneToOne
     @JoinColumn(name = "order_id")
-    private Order order;
+    private Long orderId;
 
     @Column(name = "phone_number")
     private String phoneNumber;
@@ -39,7 +41,7 @@ public class Delivery {
     public String toString() {
         return "Delivery{" +
                 "id=" + id +
-                ", orderId=" + order.getId() +
+                ", orderId=" + orderId +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", deliveryAddress=" + deliveryAddress +
                 ", deliveryCost=" + deliveryCost +

@@ -6,175 +6,170 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ru.geekbrains.team1.geek_crm.entities.*;
-import ru.geekbrains.team1.geek_crm.entities.OutEntity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class JsonParser {
-    private String response;
-
-
-    public JsonParser(String response) throws JSONException, JsonProcessingException {
-        this.response = response;
-
-/**
- * Вариант №1 с ручным парсингм
- */
-//        JSONObject objJson = new JSONObject(response);
-//        switch(objJson.getString("entity")){
-//            case "OutOrder":
-//                getOrder(objJson);
-//                break;
-//            case "OutProduct":
-//                getProduct(objJson);
-//                break;
-//            case "OutUser":
-//                getUser(objJson);
-//                break;
+//    private String response;
 //
-//        }
+//    public JsonParser(String response) throws JSONException, JsonProcessingException {
+//        this.response = response;
+//
+//    }
 
-/**
- * Вариант №2 с GSON
- */
-        OutEntity inEvent = new Gson().fromJson(response, OutEntity.class);
-        getEvent(inEvent);
+    public void parse(String response) throws JSONException, JsonProcessingException {
+        JSONObject objJson = new JSONObject(response);
+        System.out.println(getEntity(objJson).toString());
     }
 
-    private User getUser(JSONObject userJson) throws JSONException {
-        long id = userJson.getLong("id");
-        String userName = userJson.getString("userName");
-        String firstName = userJson.getString("firstName");
-        String lastName = userJson.getString("lastName");
-        String email = userJson.getString("email");
-        String phoneNumber = userJson.getString("phoneNumber");
-        String store = userJson.getString("store");
+    private Object getEntity(JSONObject entity) throws JSONException, JsonProcessingException {
+        String eventClassName = entity.getString("entityClassSimpleName");
+        JSONObject classBody = entity.getJSONObject("body");
 
-        User user = new User(id, userName, firstName, lastName, email, phoneNumber, store);
-
-        return user;
+        if(eventClassName.equals("Event")) {
+            return getEvent(classBody);
+        } else if(eventClassName.equals("Order")) {
+            return getOrder(classBody);
+        } else if(eventClassName.equals("OrderStatus") ) {
+            return getOrderStatus(classBody);
+        } else if(eventClassName.equals("Customer") ) {
+            return getCustomer(classBody);
+        } else if(eventClassName.equals("OrderItem") ) {
+            return getOrderItem(classBody);
+        } else if(eventClassName.equals("Product") ) {
+            return getProduct(classBody);
+        } else if(eventClassName.equals("Category") ) {
+            return getCategory(classBody);
+        } else if(eventClassName.equals("Delivery") ) {
+            return getDelivery(classBody);
+        } else if(eventClassName.equals("Address") ) {
+            return getAddress(classBody);
+        }
+        return null;
     }
 
-    private Product getProduct(JSONObject prodJson) throws JSONException {
-        Product product = new Product();
-        product.setId(prodJson.getLong("id"));
-        product.setStore(prodJson.getString("store"));
-        product.setVendorCode(prodJson.getString("vendorCode"));
-        product.setTitle(prodJson.getString("categoryTitle"));
-        product.setShortDescription(prodJson.getString("shortDescription"));
-        product.setFullDescription(prodJson.getString("fullDescription"));
-        product.setPrice(BigDecimal.valueOf(Long.parseLong(prodJson.getString("price"))));
+    private Customer getCustomer(JSONObject customerJson) throws JSONException, JsonProcessingException {
+        Customer customer = Customer.builder()
+                .id(customerJson.getLong("id"))
+                .userName(customerJson.getString("userName"))
+                .firstName(customerJson.getString("firstName"))
+                .lastName(customerJson.getString("lastName"))
+                .email(customerJson.getString("email"))
+                .phoneNumber(customerJson.getString("phoneNumber"))
+//                .store(userJson.getString("store"))
+                .deliveryAddress((Address) getEntity(customerJson.getJSONObject("deliveryAddress")))
+                .build();
+        return customer;
+    }
+
+    private Product getProduct(JSONObject productJson) throws JSONException, JsonProcessingException {
+        Product product = Product.builder()
+                .id(productJson.getLong("id"))
+                .category((Category) getEntity(productJson.getJSONObject("category")))
+                .vendorCode(productJson.getString("vendorCode"))
+                .title(productJson.getString("title"))
+                .price(BigDecimal.valueOf(productJson.getLong("price")))
+                .shortDescription(productJson.getString("shortDescription"))
+//                .fullDescription(productJson.getString("fullDescription"))
+//                .createdAt(localDateConvert(productJson.getString("createdAt")))
+//                .updatedAt(localDateConvert(productJson.getString("updatedAt")))
+//                .store(productJson.getString("store"))
+                .build();
         return product;
     }
 
-    private void getOrder(JSONObject orderJson) throws JSONException, JsonProcessingException {
-        Order order = new Order();
-        order.setId(orderJson.getLong("id"));
-        order.setStore(orderJson.getString("store"));
-        order.setOrderStatus(orderJson.getString("orderStatusTitle"));
-        order.setUser(getUser( orderJson.getJSONObject("outUser")));
-        order.setOrderItems(getOrderItems(orderJson.getJSONArray("outOrderItems")));
-
-        System.out.println(order.toString());
+    private OrderStatus getOrderStatus(JSONObject orderStatusJson) {
+         OrderStatus orderStatus = new Gson().fromJson(orderStatusJson.toString(), OrderStatus.class);
+         return orderStatus;
     }
 
-    private List<OrderItem> getOrderItems(JSONArray outOrderItems) throws JSONException {
-        List<OrderItem> list = new ArrayList<>();
+    private OrderItem getOrderItem(JSONObject orderItemJson) throws JSONException, JsonProcessingException {
+       OrderItem orderItem = OrderItem.builder()
+               .id(orderItemJson.getLong("id"))
+               .product((Product) getEntity(orderItemJson.getJSONObject("product")))
+               .itemPrice(BigDecimal.valueOf(orderItemJson.getLong("itemPrice")))
+               .quantity(orderItemJson.getInt("quantity"))
+               .itemCosts(BigDecimal.valueOf(orderItemJson.getLong("itemCosts")))
+               .orderId(orderItemJson.getLong("order"))
+//               .store(orderItemJson.getString("store"))
+               .build();
+       return orderItem;
+    }
 
-        if (outOrderItems != null) {
-            int len = outOrderItems.length();
-            for (int i=0;i<len;i++){
-                list.add(getOrderItem(new JSONObject(outOrderItems.get(i).toString())));
-            }
+    private Address getAddress(JSONObject addressJson) {
+        Address address = new Gson().fromJson(addressJson.toString(), Address.class);
+        return address;
+    }
+
+    private Category getCategory(JSONObject catJson) {
+        Category  category = new Gson().fromJson(catJson.toString(), Category.class);
+        return category;
+    }
+
+    private Event getEvent(JSONObject eventJson) throws JSONException {
+         Event event = Event.builder()
+                 .id(eventJson.getLong("id"))
+                 .actionType(eventJson.getString("actionType"))
+                 .title(eventJson.getString("title"))
+                 .description(eventJson.getString("description"))
+                 .entityType(eventJson.getString("entityType"))
+                 .entityId(eventJson.getLong("entityId"))
+                 .createdAt(localDateConvert(eventJson.getString("createdAt")))
+                 .serverAcceptedAt(localDateConvert(eventJson.getString("serverAcceptedAt")))
+                 .build();
+         return event;
+    }
+
+    private Order getOrder(JSONObject orderJson) throws JSONException, JsonProcessingException {
+         Order order = Order.builder()
+                .id(orderJson.getLong("id"))
+                .orderStatus((OrderStatus) getEntity(orderJson.getJSONObject("orderStatus")))
+                .customer((Customer) getEntity(orderJson.getJSONObject("Customer")))
+                .orderItems(getOrderItems(orderJson.getJSONArray("orderItems")))
+                .totalItemsCosts(BigDecimal.valueOf(orderJson.getLong("totalItemsCosts")))
+                .totalCosts(BigDecimal.valueOf(orderJson.getLong("totalCosts")))
+//                .store(orderJson.getString("store"))
+                .delivery((Delivery) getEntity(orderJson.getJSONObject("delivery")))
+                .createdAt(localDateConvert(orderJson.getString("createdAt")))
+                .updatedAt(localDateConvert(orderJson.getString("updatedAt")))
+                .build();
+        return order;
+    }
+
+    private LocalDateTime localDateConvert(String dateTime) {
+        if (!dateTime.equals("null")) {
+            dateTime = dateTime.replace("T", " ");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime date = LocalDateTime.parse(dateTime, formatter);
+
+            return date;
+        } else return null;
+
+    }
+
+    private Delivery getDelivery(JSONObject deliveryJson) throws JSONException, JsonProcessingException {
+         Delivery delivery = Delivery.builder()
+                 .id(deliveryJson.getLong("id"))
+                 .orderId(deliveryJson.getLong("order"))
+                 .phoneNumber(deliveryJson.getString("phoneNumber"))
+                 .deliveryAddress((Address)getEntity(deliveryJson.getJSONObject("deliveryAddress")))
+                 .deliveryCost(BigDecimal.valueOf(deliveryJson.getLong("deliveryCost")))
+                 .deliveryExpectedAt(localDateConvert(deliveryJson.getString("deliveryExpectedAt")))
+                 .deliveredAt(localDateConvert(deliveryJson.getString("deliveredAt")))
+                 .build();
+         return delivery;
+    }
+
+    private List<OrderItem> getOrderItems(JSONArray classBody) throws JSONException, JsonProcessingException {
+        List<OrderItem> list = new ArrayList<>();
+        int len = classBody.length();
+        for (int i=0;i<len;i++){
+            list.add((OrderItem) getEntity(new JSONObject(classBody.get(i).toString())));
         }
         return list;
     }
-
-    private OrderItem getOrderItem(JSONObject orderItemJson) throws JSONException {
-        OrderItem orderItem = new OrderItem();
-        orderItem.setId(orderItemJson.getLong("id"));
-        orderItem.setProduct(getProduct(orderItemJson.getJSONObject("outProduct")));
-        orderItem.setStore(orderItemJson.getString("store"));
-        orderItem.setItemPrice(BigDecimal.valueOf(Long.parseLong(orderItemJson.getString("itemPrice"))));
-        orderItem.setItemCosts(BigDecimal.valueOf(Long.parseLong(orderItemJson.getString("itemCosts"))));
-        orderItem.setQuantity(orderItemJson.getInt("quantity"));
-        orderItem.setOrder_id(orderItemJson.getLong("orderId"));
-        return orderItem;
-    }
-
-    /**
-     * Тут начинаются методы к Вариант №2 с GSON
-     * @param inEvent
-     */
-
-    private OutEntity getEvent(Object inEvent) {
-//        OutEntity inEvent = new Gson().fromJson(response, OutEntity.class);
-        OutEntity event = new OutEntity(inEvent.getClass().getSimpleName());
-        Map<String, Object> entityFields = event.getBody();
-
-
-
-        if(inEvent instanceof Event) {
-            fillEventEntityFields((Event) entityFields.get("body"), entityFields);
-        } else if(inEvent instanceof Order) {
-            fillOrderEntityFields((Order)entityFields.get("body"));
-        } else if(inEvent instanceof OrderStatus) {
-            fillOrderStatusEntityFields((OrderStatus)entityFields.get("body"));
-        } else if(inEvent instanceof User) {
-            fillUserEntityFields((User)entityFields.get("body"));
-        } else if(inEvent instanceof OrderItem) {
-            fillOrderItemEntityFields((OrderItem)entityFields.get("body"));
-        } else if(inEvent instanceof Product) {
-            fillProductEntityFields((Product)entityFields.get("body"));
-        } else if(inEvent instanceof Category) {
-            fillCategoryEntityFields((Category)entityFields.get("body"));
-        } else if(inEvent instanceof Delivery) {
-            fillDeliveryEntityFields((Delivery)entityFields.get("body"));
-        } else if(inEvent instanceof Address) {
-            fillAddressEntityFields((Address)entityFields.get("body"));
-        }
-
-        return event;
-
-//        System.out.println(outEntity.toString());
-    }
-
-    private void fillAddressEntityFields(Address body) {
-    }
-
-    private void fillDeliveryEntityFields(Delivery body) {
-
-    }
-
-    private void fillCategoryEntityFields(Category body) {
-
-    }
-
-    private void fillProductEntityFields(Product body) {
-
-    }
-
-    private void fillOrderItemEntityFields(OrderItem body) {
-
-    }
-
-    private void fillUserEntityFields(User body) {
-
-    }
-
-    private void fillOrderStatusEntityFields(OrderStatus body) {
-
-    }
-
-    private void fillOrderEntityFields(Order body) {
-    }
-
-    private void fillEventEntityFields(Event body, Map<String, Object> entityFields) {
-        body.setEntity(getEvent((Order)entityFields.get("entity")));
-    }
-
-
 }

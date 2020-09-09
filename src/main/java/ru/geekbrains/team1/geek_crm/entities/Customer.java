@@ -1,5 +1,6 @@
 package ru.geekbrains.team1.geek_crm.entities;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -10,7 +11,8 @@ import java.util.Map;
 @Entity
 @Table(name = "users")
 @Data
-public class User {
+@Builder
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,10 +37,9 @@ public class User {
     @Column(name = "store")
     private String store;
 
-
-//    @ManyToOne
-//    @JoinColumn(name = "delivery_address_id")
-//    private Address deliveryAddress;
+    @ManyToOne
+    @JoinColumn(name = "delivery_address_id")
+    private Address deliveryAddress;
 
      public static final Map<String, String> COLUMN_MAPPINGS = new HashMap<>();
 
@@ -51,20 +52,9 @@ public class User {
         COLUMN_MAPPINGS.put("email", "email");
     }
 
-
-    public User(Long id, String userName, String firstName, String lastName, String email, String phoneNumber, String store) {
-        this.id = id;
-        this.userName = userName;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.store = store;
-    }
-
     @Override
     public String toString() {
-        return "User{" +
+        return "Customer{" +
                 "id=" + id +
                 ", userName='" + userName + '\'' +
                 ", firstName='" + firstName + '\'' +

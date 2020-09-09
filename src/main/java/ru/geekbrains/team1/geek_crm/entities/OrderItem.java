@@ -1,5 +1,6 @@
 package ru.geekbrains.team1.geek_crm.entities;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "order_item")
 @Data
+@Builder
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +31,7 @@ public class OrderItem {
 
     @ManyToOne
     @JoinColumn(name = "order_id")
-    private Long order_id;
+    private Long orderId;
 
     @Column(name = "store")
     private String store;
@@ -42,7 +44,7 @@ public class OrderItem {
                 ", itemPrice=" + itemPrice +
                 ", quantity=" + quantity +
                 ", itemCosts=" + itemCosts +
-                ", order_id=" + order_id +
+                ", order_id=" + orderId +
                 ", store=" + store +
                 '}';
     }

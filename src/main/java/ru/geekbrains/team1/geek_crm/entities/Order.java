@@ -1,5 +1,6 @@
 package ru.geekbrains.team1.geek_crm.entities;
 
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "orders")
 @Data
+@Builder
 public class Order {
 
     @Id
@@ -20,11 +22,11 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "order_status")
-    private String orderStatus;
+    private OrderStatus orderStatus;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "order", fetch = FetchType.EAGER)
     private List<OrderItem> orderItems;
@@ -50,10 +52,10 @@ public class Order {
     @CreationTimestamp
     private LocalDateTime updatedAt;
 
-//    public Order(String orderStatus, User user, List<OrderItem> orderItems, BigDecimal totalItemsCosts,
+//    public Order(String orderStatus, Customer Customer, List<OrderItem> orderItems, BigDecimal totalItemsCosts,
 //                 BigDecimal totalCosts, String store, Delivery delivery, LocalDateTime createdAt, LocalDateTime updatedAt) {
 //        this.orderStatus = orderStatus;
-//        this.user = user;
+//        this.Customer = Customer;
 //        this.orderItems = orderItems;
 //        this.totalItemsCosts = totalItemsCosts;
 //        this.totalCosts = totalCosts;
@@ -68,7 +70,7 @@ public class Order {
         return "Order{" +
                 "id=" + id +
                 ", orderStatus=" + orderStatus +
-                ", userId=" + user.toString() +
+                ", userId=" + customer.toString() +
                 ", orderItems=" + orderItems +
                 ", totalItemsCosts=" + totalItemsCosts +
                 ", totalCosts=" + totalCosts +
@@ -78,4 +80,13 @@ public class Order {
                 ", store=" + store +
                 '}';
     }
+
+//    public static class builder {
+//    }
+
+//    public class builder extends Order {
+//        builder(Long id, String orderStatus, Customer Customer, List<OrderItem> orderItems, BigDecimal totalItemsCosts, BigDecimal totalCosts, String store, Delivery delivery, LocalDateTime createdAt, LocalDateTime updatedAt) {
+//            super(id, orderStatus, Customer, orderItems, totalItemsCosts, totalCosts, store, delivery, createdAt, updatedAt);
+//        }
+//    }
 }
