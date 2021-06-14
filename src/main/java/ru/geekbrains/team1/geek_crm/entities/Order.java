@@ -52,19 +52,6 @@ public class Order {
     @CreationTimestamp
     private LocalDateTime updatedAt;
 
-//    public Order(String orderStatus, Customer Customer, List<OrderItem> orderItems, BigDecimal totalItemsCosts,
-//                 BigDecimal totalCosts, String store, Delivery delivery, LocalDateTime createdAt, LocalDateTime updatedAt) {
-//        this.orderStatus = orderStatus;
-//        this.Customer = Customer;
-//        this.orderItems = orderItems;
-//        this.totalItemsCosts = totalItemsCosts;
-//        this.totalCosts = totalCosts;
-//        this.store = store;
-//        this.delivery = delivery;
-//        this.createdAt = createdAt;
-//        this.updatedAt = updatedAt;
-//    }
-
     @Override
     public String toString() {
         return "Order{" +

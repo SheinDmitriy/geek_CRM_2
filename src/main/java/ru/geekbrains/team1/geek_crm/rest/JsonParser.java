@@ -5,30 +5,50 @@ import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.geekbrains.team1.geek_crm.entities.*;
+import ru.geekbrains.team1.geek_crm.repository.EventRepository;
+import ru.geekbrains.team1.geek_crm.repository.OrderRepository;
+import ru.geekbrains.team1.geek_crm.service.EventService;
+import ru.geekbrains.team1.geek_crm.service.OrderService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import static ru.geekbrains.team1.geek_crm.Util.TimeUtils.localDateConvert;
+
+@Service
 public class JsonParser {
-//    private String response;
-//
-//    public JsonParser(String response) throws JSONException, JsonProcessingException {
-//        this.response = response;
-//
+    private EventService eventService;
+    private OrderService orderService;
+
+//    @Autowired
+//    public JsonParser(EventService eventService, OrderService orderService) {
+//        this.eventService = eventService;
+//        this.orderService = orderService;
 //    }
+
+    JsonConnector connector = new JsonConnector();
+    String url = "https://dev-amin-ishop-heroku.herokuapp.com/api/v1/";
+    String url2 = "http://localhost:8080/api/v1/";
 
     public void parse(String response) throws JSONException, JsonProcessingException {
         JSONObject objJson = new JSONObject(response);
-        System.out.println(getEntity(objJson).toString());
+        System.out.println(Objects.requireNonNull(getEntity(objJson), "объект на входе. что-то не то"));
+        getEntity(objJson);
+
+//        connector.getEvent(url2, objJson);
+
     }
 
     private Object getEntity(JSONObject entity) throws JSONException, JsonProcessingException {
-        String eventClassName = entity.getString("entityClassSimpleName");
-        JSONObject classBody = entity.getJSONObject("body");
+        String eventClassName = entity.getString("entityType");
+        JSONObject classBody = entity.getJSONObject("entityFields");
 
         if(eventClassName.equals("Event")) {
             return getEvent(classBody);
@@ -36,7 +56,7 @@ public class JsonParser {
             return getOrder(classBody);
         } else if(eventClassName.equals("OrderStatus") ) {
             return getOrderStatus(classBody);
-        } else if(eventClassName.equals("Customer") ) {
+        } else if(eventClassName.equals("User") ) {
             return getCustomer(classBody);
         } else if(eventClassName.equals("OrderItem") ) {
             return getOrderItem(classBody);
@@ -48,8 +68,15 @@ public class JsonParser {
             return getDelivery(classBody);
         } else if(eventClassName.equals("Address") ) {
             return getAddress(classBody);
+        } else if(eventClassName.equals("ActionType") ) {
+            return getActionType(classBody);
         }
         return null;
+    }
+
+    private ActionType getActionType(JSONObject actionTypeJson) {
+        ActionType actionType = new Gson().fromJson(actionTypeJson.toString(), ActionType.class);
+        return actionType;
     }
 
     private Customer getCustomer(JSONObject customerJson) throws JSONException, JsonProcessingException {
@@ -67,12 +94,13 @@ public class JsonParser {
     }
 
     private Product getProduct(JSONObject productJson) throws JSONException, JsonProcessingException {
+        System.out.println(productJson);
         Product product = Product.builder()
                 .id(productJson.getLong("id"))
                 .category((Category) getEntity(productJson.getJSONObject("category")))
                 .vendorCode(productJson.getString("vendorCode"))
                 .title(productJson.getString("title"))
-                .price(BigDecimal.valueOf(productJson.getLong("price")))
+//                .price(BigDecimal.valueOf(productJson.getLong("itemPrice")))
                 .shortDescription(productJson.getString("shortDescription"))
 //                .fullDescription(productJson.getString("fullDescription"))
 //                .createdAt(localDateConvert(productJson.getString("createdAt")))
@@ -110,25 +138,31 @@ public class JsonParser {
         return category;
     }
 
-    private Event getEvent(JSONObject eventJson) throws JSONException {
-         Event event = Event.builder()
+    private Event getEvent(JSONObject eventJson) throws JSONException, JsonProcessingException {
+        String requestUrl;
+        Event event = Event.builder()
                  .id(eventJson.getLong("id"))
-                 .actionType(eventJson.getString("actionType"))
-                 .title(eventJson.getString("title"))
-                 .description(eventJson.getString("description"))
+                 .actionType((ActionType) getEntity(eventJson.getJSONObject("actionType")))
                  .entityType(eventJson.getString("entityType"))
-                 .entityId(eventJson.getLong("entityId"))
+                 .entityId(eventJson.getLong("id"))
                  .createdAt(localDateConvert(eventJson.getString("createdAt")))
                  .serverAcceptedAt(localDateConvert(eventJson.getString("serverAcceptedAt")))
                  .build();
-         return event;
+//         getEntity(eventJson.getJSONObject(eventJson.getString("actionType")));
+//         eventService.save(event);
+        System.out.println(event);
+
+        requestUrl = url2 + event.getEntityType().toLowerCase() + "/" + event.getId() + "/" + event.getEntityType().toLowerCase() + "Id";
+        connector.get(requestUrl);
+        return event;
+
     }
 
     private Order getOrder(JSONObject orderJson) throws JSONException, JsonProcessingException {
          Order order = Order.builder()
                 .id(orderJson.getLong("id"))
                 .orderStatus((OrderStatus) getEntity(orderJson.getJSONObject("orderStatus")))
-                .customer((Customer) getEntity(orderJson.getJSONObject("Customer")))
+                .customer((Customer) getEntity(orderJson.getJSONObject("user")))
                 .orderItems(getOrderItems(orderJson.getJSONArray("orderItems")))
                 .totalItemsCosts(BigDecimal.valueOf(orderJson.getLong("totalItemsCosts")))
                 .totalCosts(BigDecimal.valueOf(orderJson.getLong("totalCosts")))
@@ -137,19 +171,12 @@ public class JsonParser {
                 .createdAt(localDateConvert(orderJson.getString("createdAt")))
                 .updatedAt(localDateConvert(orderJson.getString("updatedAt")))
                 .build();
+        System.out.println(order);
+//        orderService.saveOrder(order);
         return order;
     }
 
-    private LocalDateTime localDateConvert(String dateTime) {
-        if (!dateTime.equals("null")) {
-            dateTime = dateTime.replace("T", " ");
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            LocalDateTime date = LocalDateTime.parse(dateTime, formatter);
 
-            return date;
-        } else return null;
-
-    }
 
     private Delivery getDelivery(JSONObject deliveryJson) throws JSONException, JsonProcessingException {
          Delivery delivery = Delivery.builder()
@@ -167,7 +194,7 @@ public class JsonParser {
     private List<OrderItem> getOrderItems(JSONArray classBody) throws JSONException, JsonProcessingException {
         List<OrderItem> list = new ArrayList<>();
         int len = classBody.length();
-        for (int i=0;i<len;i++){
+        for (int i = 0; i < len; i++){
             list.add((OrderItem) getEntity(new JSONObject(classBody.get(i).toString())));
         }
         return list;

@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
-@Table(name = "users")
+@Table(name = "сustomer")
 @Data
 @Builder
 public class Customer {
@@ -41,7 +41,10 @@ public class Customer {
     @JoinColumn(name = "delivery_address_id")
     private Address deliveryAddress;
 
-     public static final Map<String, String> COLUMN_MAPPINGS = new HashMap<>();
+    public static final Map<String, String> COLUMN_MAPPINGS = new HashMap<>();
+
+//    public Customer() {
+//    }
 
     static {
         COLUMN_MAPPINGS.put("id", "id");
